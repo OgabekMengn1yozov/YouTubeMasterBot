@@ -31,13 +31,29 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const telegraf_1 = require("telegraf");
 const dotenv = __importStar(require("dotenv"));
+const postgres_1 = __importDefault(require("./db/postgres"));
 dotenv.config();
 const bot = new telegraf_1.Telegraf(process.env.TOKEN);
-bot.command("start", (ctx) => __awaiter(void 0, void 0, void 0, function* () {
-    ctx.reply("Salom");
+bot.use((ctx, next) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    let user_id = (_a = ctx.message) === null || _a === void 0 ? void 0 : _a.from.id;
+    let user = postgres_1.default.findOne({ where: { user_id } });
+    if (!user) {
+        yield postgres_1.default.create({
+            user_id,
+        });
+    }
+    next();
 }));
-bot.on("text", (ctx) => __awaiter(void 0, void 0, void 0, function* () { }));
+bot.command("start", (ctx) => __awaiter(void 0, void 0, void 0, function* () {
+    ctx.reply("Assalomu alaykum bu bot orqali You Tube dan videolarni yuklab olishingiz mumkin\nMenga you tube link yuboring");
+}));
+bot.on("text", (ctx) => __awaiter(void 0, void 0, void 0, function* () {
+}));
 bot.launch();
